@@ -2,7 +2,6 @@ import { calculateFuel, part1, part2 } from './day1'
 
 describe('day1', () => {
     describe('part1', () => {
-
         const examples = [
             [12, 2],
             [14, 2],
@@ -38,9 +37,5 @@ describe('day1', () => {
         it('gets the right answer', () => {
             expect(part2('./src/day1.txt')).toBe(4943994);
         })
-
-
     })
-
-
 })
