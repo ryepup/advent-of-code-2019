@@ -16,7 +16,7 @@ describe('day1', () => {
         }
 
         it('gets the right answer', () => {
-            expect(part1('./src/day1.txt')).toBe(3297909);
+            expect(part1('./src/day1/input.txt')).toBe(3297909);
         })
 
     })
@@ -35,7 +35,7 @@ describe('day1', () => {
         }
 
         it('gets the right answer', () => {
-            expect(part2('./src/day1.txt')).toBe(4943994);
+            expect(part2('./src/day1/input.txt')).toBe(4943994);
         })
     })
 })
