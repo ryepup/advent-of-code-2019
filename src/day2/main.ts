@@ -65,9 +65,38 @@ function mult(a: number, b: number, dst: number, ram: number[]): void {
     ram[dst] = ram[a] * ram[b];
 }
 
-export function patch1202(ram: number[]): number[] {
-    // replace position 1 with the value 12 and replace position 2 with the value 2
-    ram[1] = 12
-    ram[2] = 2
+export interface Patch {
+    noun: number,
+    verb: number
+}
+
+function patch(p: Patch, ram: number[]): number[] {
+    ram[1] = p.noun
+    ram[2] = p.verb
     return ram
+}
+
+export function patch1202(ram: number[]) {
+    return patch({ noun: 12, verb: 2 }, ram);
+}
+
+export function search(initialState: number[], target: number): Patch {
+    for (const p of patches()) {
+        const ram = patch(p, [...initialState])
+        const result = run(ram)[0]
+        if (result === target) {
+            return p
+        }
+    }
+    throw new Error('could not find a good patch')
+}
+
+function* patches() {
+    for (const noun of range(0, 99))
+        for (const verb of range(0, 99))
+            yield { noun, verb }
+}
+
+function* range(start: number, end: number) {
+    for (let i = start; i <= end; i++) { yield i; }
 }

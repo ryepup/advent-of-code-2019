@@ -1,4 +1,4 @@
-import { run, readTape, patch1202 } from './main'
+import { run, readTape, patch1202, search } from './main'
 
 describe('day2', () => {
     const examples = [
@@ -20,6 +20,14 @@ describe('day2', () => {
         const ram = readTape('./src/day2/input.txt');
 
         const result = run(patch1202(ram))
-        expect(result[0]).toBe(0);
+        expect(result[0]).toBe(5482655);
+    })
+
+    it('finds part 2 answer', () => {
+        const ram = readTape('./src/day2/input.txt');
+
+        const p = search(ram, 19690720)
+
+        expect((100 * p.noun) + p.verb).toBe(-1);
     })
 })
