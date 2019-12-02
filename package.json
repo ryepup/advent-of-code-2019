@@ -1,0 +1,17 @@
+{
+  "name": "advent-of-code2019",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Ryan Davis <ryepup@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.14",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.2"
+  }
+}
