@@ -1,20 +1,21 @@
 import fs from 'fs'
 
 interface Point {
-    x: number,
-    y: number
+    readonly x: number,
+    readonly y: number,
+    readonly step: number
 }
+const origin: Point = { x: 0, y: 0, step: 0 };
 interface Line {
-    p1: Point,
-    p2: Point,
-    dir: LineDirection
+    readonly p1: Point,
+    readonly p2: Point,
+    readonly dir: LineDirection
 }
 type Path = Line[]
 
 export enum LineDirection { Vertical, Horizontal }
 
 function parsePath(path: string): Path {
-    const origin = { x: 0, y: 0 }
     return path.split(',')
         .map(parseMove)
         .reduce((path: Path, move, idx) => {
@@ -30,10 +31,10 @@ function parsePath(path: string): Path {
 function parseMove(move: string): Point {
     const length = parseInt(move.substring(1))
     switch (move[0]) {
-        case 'R': return { x: length, y: 0 }
-        case 'L': return { x: -length, y: 0 }
-        case 'U': return { x: 0, y: length }
-        case 'D': return { x: 0, y: -length }
+        case 'R': return { x: length, y: 0, step: length }
+        case 'L': return { x: -length, y: 0, step: length }
+        case 'U': return { x: 0, y: length, step: length }
+        case 'D': return { x: 0, y: -length, step: length }
     }
     throw new Error(`unknown move ${move[0]}`)
 }
@@ -41,7 +42,8 @@ function parseMove(move: string): Point {
 function add(p1: Point, p2: Point): Point {
     return {
         x: p1.x + p2.x,
-        y: p1.y + p2.y
+        y: p1.y + p2.y,
+        step: p1.step + p2.step
     }
 }
 
@@ -64,7 +66,17 @@ export function intersects(a: Line, b: Line) {
 function intersection(a: Line, b: Line): Point {
     const [vert, horiz] = a.dir === LineDirection.Vertical
         ? [a, b] : [b, a];
-    return { x: vert.p1.x, y: horiz.p1.y }
+    const intersection = {
+        x: vert.p1.x,
+        y: horiz.p1.y,
+        step: 0
+    };
+
+    return {
+        ...intersection,
+        step: vert.p1.step + manhattanDistance(vert.p1, intersection)
+            + horiz.p1.step + manhattanDistance(horiz.p1, intersection),
+    }
 }
 
 function* crossings(p1: Path, p2: Path) {
@@ -76,8 +88,8 @@ function* crossings(p1: Path, p2: Path) {
         }
 }
 
-function manhattanDistance(p: Point) {
-    return Math.abs(p.x) + Math.abs(p.y);
+function manhattanDistance(p: Point, p2: Point): number {
+    return Math.abs(p.x - p2.x) + Math.abs(p.y - p2.y);
 }
 
 export function parsePaths(file: string) {
@@ -86,15 +98,22 @@ export function parsePaths(file: string) {
     return [lines[0], lines[1]];
 }
 
-export function part1(pathDef1: string, pathdef2: string): number {
+function findMinimalIntersection(metric: ((value: Point) => number), pathDef1: string, pathdef2: string) {
     const path1 = parsePath(pathDef1);
     const path2 = parsePath(pathdef2);
     const intersects = [...crossings(path1, path2)];
-    const distances = intersects.map(manhattanDistance);
-    return distances
+    const values = intersects.map(metric);
+    return values
         .filter(x => x !== 0) // skip origin
         .reduce((a, b) => a < b ? a : b);
 }
+
+export const part1 = findMinimalIntersection.bind(null,
+    p => manhattanDistance(p, origin))
+
+export const part2 = findMinimalIntersection.bind(null,
+    p => p.step)
+
 
 export function asSvg(outfile: string, p1: string, p2: string) {
 
@@ -115,5 +134,3 @@ export function asSvg(outfile: string, p1: string, p2: string) {
         return `<line x1="${l.p1.x}" x2="${l.p2.x}" y1="${l.p1.y}" y2="${l.p2.y}"/>`
     }
 }
-
-//<line  x1="-2093" x2="-2093" y1="3382" y2="3049"/>
