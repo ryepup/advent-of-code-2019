@@ -28,6 +28,6 @@ describe('day2', () => {
 
         const p = search(ram, 19690720)
 
-        expect((100 * p.noun) + p.verb).toBe(-1);
+        expect((100 * p.noun) + p.verb).toBe(4967);
     })
 })
